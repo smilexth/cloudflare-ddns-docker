@@ -52,13 +52,17 @@ setting up ```settings.json```: Before running the container with neccesary para
 | interval             | settings     | Update interval in seconds | 10               |
 
 
-**start**
+**Start with CLI**
 
-```sudo docker run -d --name="cloudflare-ddns" --restart=always -v ./settings.json:/app/settings.json smilexth/cloudflare-ddns:latest```
+```shell
+sudo docker run -d --name="cloudflare-ddns" --restart=always -v ./settings.json:/app/settings.json smilexth/cloudflare-ddns:latest
+```
 
-**docker-compose**
+**Pack all things and keep it run with docker-compose**
 
-```sudo docker-compose up -d```
+```shell
+sudo docker-compose up -d
+```
 
 ## Welcome for any issue ticket
 
