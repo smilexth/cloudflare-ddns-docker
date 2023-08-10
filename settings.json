@@ -1,0 +1,18 @@
+{
+"credentials": {
+    "zoneid":"xxxxxx",
+    "recordid":"xxxxxx",
+    "token":"xxxxxxx"
+},
+"data": {
+    "type":"A",
+    "name":"cloud",
+    "content":"10.100.10.100",
+    "ttl":120,
+    "proxied":false
+    },
+"settings": {
+    "debug": false,      
+    "interval": 10         
+    }
+}

@@ -12,9 +12,14 @@ In summary, the Dynamic DNS Updater Docker image offers a turnkey solution for t
 
 # How to Get Started:
 
-```docker pull smilexth/cloudflare-ddns```
+**pull image**
 
-```
+```sudo docker pull smilexth/cloudflare-ddns```
+
+**running**
+
+```sudo docker run -d --name="cloudflare-ddns" --restart=always -v ./settings.json:/app/settings.json smilexth/cloudflare-ddns:latest```
+
 
 ## Welcome for any issue ticket
 

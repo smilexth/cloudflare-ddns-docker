@@ -1,5 +1,8 @@
 # Use Alpine as the base image due to its small size
-FROM alpine:latest
+FROM arm64v8/alpine:3.18.3
+
+# Set Timezone
+ENV TZ="Asia/Bangkok"
 
 # Set the working directory inside the container
 WORKDIR /app
