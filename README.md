@@ -6,19 +6,15 @@ The Dynamic DNS Updater Docker image is an encapsulated environment designed to 
 
 **Configuration via settings.json**: Before running the container, users can configure the script by modifying the settings.json file. This file holds crucial data, including Cloudflare credentials and update intervals.
 
-**Regular IP Monitoring**: Once the container is up, the embedded script constantly checks the host's public IP. If detected changes occur, it interacts with the Cloudflare API to update the DNS record.
 
-**Logging**: The script within the image has a dedicated logging function, allowing users to monitor its activities and troubleshoot if necessary. Logs are outputted with timestamps to provide a clear chronological view of events.
-
-**Repetitive Checks**: Based on the interval set in settings.json, the script goes into a loop, periodically checking for IP changes and ensuring that the Cloudflare DNS record remains current.
-
-**Efficiency and Low Overhead**: Thanks to Alpine Linux's minimal footprint and the script's optimized design, this Docker image is both lightweight and resource-efficient, making it suitable for deployment even on constrained environments.
 
 In summary, the Dynamic DNS Updater Docker image offers a turnkey solution for those looking to maintain an updated DNS record on Cloudflare without manual intervention, all within the consistent and isolated environment that Docker provides.
 
 # How to Get Started:
 
 ```docker pull smilexth/cloudflare-ddns```
+
+```
 
 ## Welcome for any issue ticket
 
