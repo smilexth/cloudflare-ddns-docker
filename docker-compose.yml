@@ -1,0 +1,9 @@
+version: '3'
+
+services:
+  cloudflare-ddns:
+    container_name: cloudflare-ddns
+    image: smilexth/cloudflare-ddns:latest
+    restart: always
+    volumes:
+      - ./settings.json:/app/settings.json

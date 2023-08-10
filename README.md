@@ -1,25 +1,64 @@
 # Cloudflare Dynamic DNS Updater Docker Image
+
 The Dynamic DNS Updater Docker image is an encapsulated environment designed to autonomously keep a Cloudflare DNS record updated with the host's current public IP address. Crafted with portability and ease-of-use in mind, it's perfect for environments with fluctuating IP addresses.
 
 
-**Self-Contained Environment**: Built atop the lightweight Alpine Linux, this Docker image provides all the necessary tools and dependencies required for the script to run, ensuring consistent behavior regardless of where it's deployed.
-
-**Configuration via settings.json**: Before running the container, users can configure the script by modifying the settings.json file. This file holds crucial data, including Cloudflare credentials and update intervals.
 
 
-
-In summary, the Dynamic DNS Updater Docker image offers a turnkey solution for those looking to maintain an updated DNS record on Cloudflare without manual intervention, all within the consistent and isolated environment that Docker provides.
 
 # How to Get Started:
 
-**pull image**
+**Clone the project**
 
-```sudo docker pull smilexth/cloudflare-ddns```
+```shell
+git clone https://github.com/smilexth/cloudflare-ddns-docker
+```
 
-**running**
+**Configuration** 
+setting up ```settings.json```: Before running the container with neccesary parameters
+
+
+```JSON
+{
+"credentials": {
+    "zoneid":"xxxxxx",
+    "recordid":"xxxxxx",
+    "token":"xxxxxxx"
+    },
+"data": {
+    "type":"A",
+    "name":"cloud",
+    "content":"10.100.10.100",
+    "ttl":120,
+    "proxied":false
+    },
+"settings": {
+    "debug": false,      
+    "interval": 10         
+    }
+}
+```
+| Parameter            | Parent       | Description              | Example Value      |
+|----------------------|--------------|--------------------------|--------------------|
+| zoneid               | credentials  | Zone ID | "xxxxxx"           |
+| recordid             | credentials  | Record ID  | "xxxxxx"       |
+| token                | credentials  | Token for authentication  | "xxxxxxx"          |
+| type                 | data         | DNS record type          | "A"                |
+| name                 | data         | Name of the DNS record   | "cloud"            |
+| content              | data         | IP address or value of the record  | Leaving for Update |
+| ttl                  | data         | Time-to-live in seconds  | 120                |
+| proxied              | data         | Whether the DNS query should be proxied or not | false |
+| debug                | settings     | Verbose mode (true/false)  | false              |
+| interval             | settings     | Update interval in seconds | 10               |
+
+
+**start**
 
 ```sudo docker run -d --name="cloudflare-ddns" --restart=always -v ./settings.json:/app/settings.json smilexth/cloudflare-ddns:latest```
 
+**docker-compose**
+
+```sudo docker-compose up -d```
 
 ## Welcome for any issue ticket
 
