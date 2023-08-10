@@ -1,8 +1,10 @@
 # Use Alpine as the base image due to its small size
 FROM arm64v8/alpine:3.18.3
 
-# Set Timezone
-ENV TZ="Asia/Bangkok"
+# Set timezone
+RUN apk --no-cache add tzdata \
+    && ln -sf /usr/share/zoneinfo/Asia/Bangkok /etc/localtime \
+    && echo "Asia/Bangkok" > /etc/timezone
 
 # Set the working directory inside the container
 WORKDIR /app
