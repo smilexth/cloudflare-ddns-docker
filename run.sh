@@ -1,5 +1,10 @@
 #!/bin/sh
 
+# Initialize the LAST_IP variable as empty
+LAST_IP=""
+IP_CHANGED_MESSAGE_SHOWN=false
+
+
 # Function to log messages with date
 log() {
     local message=$1
@@ -26,46 +31,55 @@ SLEEP_DURATION=$(jq -r '.settings.interval' settings.json)
 
 log "Starting update DNS Record 🚀...."
 
-# Initialize the LAST_IP variable as empty
-LAST_IP=""
 
 while true; do
     # Check for internet connectivity
-    check_internet || { sleep 3; continue; } # If no internet, sleep and skip this iteration
+    if check_internet; then
 
     # Fetch the latest public IP
     PUBLIC_IP=$(curl -s http://ipinfo.io/ip)
-    sleep 3
+    sleep $SLEEP_DURATION
 
-    # Check if the IP has changed since the last update
-    if [ "$PUBLIC_IP" != "$LAST_IP" ]; then
-        # Modify the JSON
-        UPDATED_DATA=$(jq --arg val "$PUBLIC_IP" '.data.content = $val | .data' settings.json)
+        # Check if the IP has changed since the last update
+        if [ "$PUBLIC_IP" != "$LAST_IP" ]; then
+                
+            # Modify the JSON
+            UPDATED_DATA=$(jq --arg val "$PUBLIC_IP" '.data.content = $val | .data' settings.json)
 
-        # Run curl command with environment variables
-        RESPONSE=$(curl -sS -X PUT "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records/$RECORD_ID" \
+            # Run curl command with environment variables
+            RESPONSE=$(curl -sS -X PUT "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records/$RECORD_ID" \
             -H "Authorization: Bearer $TOKEN" \
             -H "Content-Type: application/json" --data "$UPDATED_DATA")
 
-        # Extract the value of the 'success' key
-        SUCCESS=$(echo "$RESPONSE" | jq -r '.success')
+            # Extract the value of the 'success' key
+            SUCCESS=$(echo "$RESPONSE" | jq -r '.success')
 
-        if [ "$SUCCESS" = "true" ]; then
-            # Only log $UPDATED_DATA if DEBUG is true
-            [ "$DEBUG" = "true" ] && log "$(printf '\n%s' "$UPDATED_DATA")"
-            log "Update successful with IP: $PUBLIC_IP"
-            # Store the latest updated IP
-            LAST_IP="$PUBLIC_IP"
+            if [ "$SUCCESS" = "true" ]; then
+                    # Reset the flag when IP changes
+                    IP_CHANGED_MESSAGE_SHOWN=false  
+
+                    # Only log $UPDATED_DATA if DEBUG is true
+                    [ "$DEBUG" = "true" ] && log "$(printf '\n%s' "$UPDATED_DATA")"
+                    log "Update successful with IP: $PUBLIC_IP"
+                    # Store the latest updated IP
+                    LAST_IP="$PUBLIC_IP"
+                else
+                    ERRORS=$(echo "$RESPONSE" | jq -r '.errors[]?.message')  # Extracts error messages
+                    log "Update failed ❌"
+                    [ -n "$ERRORS" ] && log "Error details: $ERRORS"
+                fi
+                
         else
-            ERRORS=$(echo "$RESPONSE" | jq -r '.errors[]?.message')  # Extracts error messages
-            log "Update failed ❌"
-            [ -n "$ERRORS" ] && log "Error details: $ERRORS"
+            # Log the message only once until the IP changes
+            if [ "$IP_CHANGED_MESSAGE_SHOWN" = "false" ]; then
+                log "IP hasn't changed. No update required."
+                IP_CHANGED_MESSAGE_SHOWN=true  # Set the flag after showing the message
+            fi
         fi
-        
-    else
-        log "IP hasn't changed. No update required."
-    fi
 
-    # Wait for a specified duration, e.g., 10 seconds
-    sleep $SLEEP_DURATION
+    else
+        sleep $SLEEP_DURATION
+        continue;
+    fi
+    
 done
